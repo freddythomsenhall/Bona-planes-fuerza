@@ -84,6 +84,10 @@ nav.tabs button.on::before{content:"";position:absolute;margin-top:-10px;width:3
 .obs textarea{resize:vertical;min-height:34px;height:34px}
 .add{width:100%;border:1.5px dashed #D5CFC7;background:transparent;border-radius:12px;padding:11px;font-weight:700;color:var(--red);display:flex;gap:6px;align-items:center;justify-content:center}
 .add:hover{background:var(--red-soft);border-color:var(--red)}
+.how{margin-top:8px;background:var(--bg);border-radius:10px;padding:8px 10px;font-size:13.5px;line-height:1.4;color:var(--ink)}
+.how b{color:var(--red);font-weight:700}
+.how .r{display:block;margin-top:3px}
+.pick .t{flex:1;min-width:0}.pick .t b{display:block}.pick .t span{display:block;font-size:12.5px;color:var(--ink-2);line-height:1.3;margin-top:2px}
 .empty{font-size:13px;color:var(--ink-2);margin:0 0 8px}
 
 /* library */
@@ -200,7 +204,7 @@ footer b{color:var(--red)}
   <!-- COMPARTIR -->
   <section class="view" id="v-share">
     <h2 class="sec">Compartir rutina</h2>
-    <p class="note">Elegí el medio. Se envía la rutina completa en texto, con series, repeticiones, descanso, observaciones y links de video.</p>
+    <p class="note">Elegí el medio. Se envía la rutina completa en texto, con la explicación de cada ejercicio, series, repeticiones, descanso, observaciones y links de video.</p>
     <div class="sharegrid">
       <a class="sb" id="shWa" target="_blank" rel="noopener"><span class="ic" style="background:#25D366"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.2 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.1.3.6 1.1 1.4 1.8 1 .9 1.8 1.1 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.2 1.5Z"/></svg></span><span>WhatsApp<small>Enviar a un contacto</small></span></a>
       <a class="sb" id="shTg" target="_blank" rel="noopener"><span class="ic" style="background:#2AABEE"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.7 19c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.8 8.8-7.9c.4-.3-.1-.5-.6-.2L6.7 12.9l-4.6-1.4c-1-.3-1-1 .2-1.5l18-6.9c.8-.3 1.6.2 1.6 1.2Z"/></svg></span><span>Telegram<small>Enviar mensaje</small></span></a>
@@ -209,7 +213,7 @@ footer b{color:var(--red)}
     </div>
     <p class="note">Si el email no abre, usá «Copiar texto» y pegalo en tu correo.</p>
     <div class="preview" id="preview"></div>
-    <footer><b>Bona</b> · entrenamiento integrado<br>@freddythomsenhall · 11 2193-9157</footer>
+    <footer><b>Bona</b> · entrenamiento integrado</footer>
   </section>
 </div>
 
@@ -373,8 +377,9 @@ function renderRoutine(){renderHead();const r=R();
  $('#phases').innerHTML=PHASES.map((p,i)=>{const a=(r.items[p.k]=r.items[p.k]||[]);
   const list=a.map((it,j)=>{const f=findEx(it.ex);if(!f)return'';const e=f.e;const hasV=e.vid||e.url||memVid[e.id];
    return `<div class="ex" data-p="${p.k}" data-j="${j}">
-    <div class="ex-top"><div class="nm" data-open="${e.id}">${esc(e.n)}<small>${hasV?'▶ Ver explicación y video':'Ver explicación'}</small></div>
+    <div class="ex-top"><div class="nm" data-open="${e.id}">${esc(e.n)}<small>${hasV?'▶ Ver video':'Ver ficha'}</small></div>
      <button class="ib" data-mv="-1" title="Subir">${I.up}</button><button class="ib" data-mv="1" title="Bajar">${I.down}</button><button class="ib del" data-rm title="Quitar">${I.x}</button></div>
+    <div class="how"><span class="r"><b>Inicio:</b> ${esc(e.ini)||'—'}</span><span class="r"><b>Ejecución:</b> ${esc(e.mov)||'—'}</span><span class="r"><b>Final:</b> ${esc(e.fin)||'—'}</span></div>
     <div class="presc">
      <div class="f"><label>Series</label><input inputmode="numeric" data-k="s" value="${esc(it.s)}"></div>
      <div class="f"><label>Reps / tiempo</label><input data-k="r" value="${esc(it.r)}"></div>
@@ -400,9 +405,9 @@ $('#phases').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)retur
 
 function picker(pk){const p=PHASES.find(x=>x.k===pk);const used=new Set(R().items[pk].map(i=>i.ex));
  openSheet(`<div class="kick">Fase ${PHASES.indexOf(p)+1}</div><h3>${p.n}</h3><p class="note">Tocá para sumar a la rutina. Podés sumar varios.</p>
- <div id="pk">${S.lib[pk].map(e=>`<div class="pick ${used.has(e.id)?'added':''}" data-id="${e.id}"><b>${esc(e.n)}</b>${(e.vid||e.url)?'<span class="vtag">VIDEO</span>':''}<span class="plus">${used.has(e.id)?'✓':'+'}</span></div>`).join('')}</div>
+ <div id="pk">${S.lib[pk].map(e=>`<div class="pick ${used.has(e.id)?'added':''}" data-id="${e.id}"><div class="t"><b>${esc(e.n)}</b><span>${esc(e.mov)}</span></div>${(e.vid||e.url)?'<span class="vtag">VIDEO</span>':''}<span class="plus">${used.has(e.id)?'✓':'+'}</span></div>`).join('')}</div>
  <div class="row2"><button class="btn ghost" id="pkNew">Crear ejercicio nuevo</button><button class="btn" id="pkOk">Listo</button></div>`);
- $('#pk').onclick=e=>{const el=e.target.closest('.pick');if(!el)return;R().items[pk].push({ex:el.dataset.id,s:p.p.s,r:p.p.r,d:p.p.d,o:''});save();el.classList.add('added');el.querySelector('.plus').textContent='✓';toast('Agregado: '+el.querySelector('b').textContent)};
+ $('#pk').onclick=e=>{const el=e.target.closest('.pick');if(!el)return;R().items[pk].push({ex:el.dataset.id,s:p.p.s,r:p.p.r,d:p.p.d,o:''});save();el.classList.add('added');el.querySelector('.plus').textContent='✓';toast('Agregado: '+el.querySelector('.t b').textContent)};
  $('#pkOk').onclick=()=>{closeSheet();renderRoutine()};
  $('#pkNew').onclick=()=>editEx(null,pk,true)}
 
@@ -475,9 +480,9 @@ function routineText(){const r=R();const L=[];
  PHASES.forEach((p,i)=>{const a=r.items[p.k]||[];if(!a.length)return;L.push('*'+(i+1)+'. '+p.n.toUpperCase()+'*');
   a.forEach(it=>{const f=findEx(it.ex);if(!f)return;n++;const e=f.e;
    const pr=[it.s&&it.s+(it.s.trim()==='1'?' serie':' series'),it.r,it.d&&it.d!=='—'&&'desc. '+it.d].filter(Boolean).join(' · ');
-   L.push('• '+e.n+(pr?' — '+pr:''));if(it.o)L.push('   ↳ '+it.o);if(e.url)L.push('   ▶ '+e.url)});L.push('')});
+   L.push('• '+e.n+(pr?' — '+pr:''));if(e.ini)L.push('   Inicio: '+e.ini);if(e.mov)L.push('   Ejecución: '+e.mov);if(e.fin)L.push('   Final: '+e.fin);if(it.o)L.push('   Obs.: '+it.o);if(e.url)L.push('   ▶ Video: '+e.url);L.push('')});L.push('')});
  if(!n)L.push('(Rutina vacía: agregá ejercicios en la pestaña Rutina)\n');
- L.push('Consultas: @freddythomsenhall · 11 2193-9157');return L.join('\n')}
+ return L.join('\n').trim()}
 function renderShare(){const t=routineText();$('#preview').textContent=t;const u=encodeURIComponent(t);const r=R();
  $('#shWa').href='https://wa.me/?text='+u;
  $('#shTg').href='https://t.me/share/url?url='+encodeURIComponent('Bona')+'&text='+u;
