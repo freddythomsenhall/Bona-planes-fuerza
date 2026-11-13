@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bona · Rutina de Fuerza Continuum</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#AC2430; --red-d:#8E1C27; --red-soft:#F7E6E8; --ink:#3A3A38; --ink-2:#6B6A66;
+  --bg:#F5F3F0; --card:#FFFFFF; --line:#E6E2DC; --ok:#2E7D5B;
+  --r:14px; --sh:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(58,58,56,.07);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Barlow,system-ui,sans-serif;font-size:16px}
+button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 110px}
+
+/* header */
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.hd{max-width:760px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.hd img{height:44px;width:auto;display:block}
+.hd .ttl{margin-left:auto;text-align:right;line-height:1.1}
+.hd .ttl b{font-family:"Barlow Condensed";font-size:18px;letter-spacing:.3px;text-transform:uppercase;color:var(--ink)}
+.hd .ttl span{display:block;font-size:12px;color:var(--ink-2)}
+
+/* tabs */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);z-index:30}
+nav.tabs .in{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr)}
+nav.tabs button{background:none;border:0;padding:10px 4px 14px;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink-2);font-weight:600;font-size:13px}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button.on{color:var(--red)}
+nav.tabs button.on::before{content:"";position:absolute;margin-top:-10px;width:36px;height:3px;border-radius:3px;background:var(--red)}
+
+.view{display:none}.view.on{display:block}
+
+/* hero card */
+.hero{margin:16px 0;background:var(--ink);color:#fff;border-radius:18px;padding:18px;position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border:22px solid var(--red);border-radius:50%;opacity:.9}
+.hero label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.8px;opacity:.7;margin-bottom:4px}
+.hero input{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:10px 12px;color:#fff;outline:none}
+.hero input:focus{border-color:#fff}
+.hero .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;position:relative;z-index:1}
+.hero .name{position:relative;z-index:1}
+.hero .name input{font-family:"Barlow Condensed";font-size:24px;font-weight:700;padding:8px 12px}
+.routbar{display:flex;gap:8px;margin-top:12px;position:relative;z-index:1;flex-wrap:wrap}
+.routbar select{flex:1;min-width:150px;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:10px;padding:8px 10px}
+.routbar select option{color:var(--ink)}
+.chip{border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;border-radius:999px;padding:7px 12px;font-weight:600;font-size:13px}
+.chip:hover{background:rgba(255,255,255,.1)}
+
+.stats{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap}
+.stat{flex:1;min-width:100px;background:#fff;border-radius:12px;padding:10px 12px;box-shadow:var(--sh)}
+.stat b{font-family:"Barlow Condensed";font-size:24px;color:var(--red);display:block;line-height:1}
+.stat span{font-size:12px;color:var(--ink-2)}
+
+/* phase */
+.phase{background:var(--card);border-radius:var(--r);box-shadow:var(--sh);margin-bottom:12px;overflow:hidden}
+.ph-h{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;user-select:none}
+.num{width:34px;height:34px;flex:none;border-radius:10px;background:var(--red);color:#fff;font-family:"Barlow Condensed";font-weight:700;font-size:19px;display:grid;place-items:center}
+.ph-h h3{margin:0;font-family:"Barlow Condensed";font-size:20px;font-weight:700;letter-spacing:.2px}
+.ph-h p{margin:0;font-size:12.5px;color:var(--ink-2)}
+.ph-h .cnt{margin-left:auto;font-size:12px;font-weight:700;background:var(--red-soft);color:var(--red);border-radius:999px;padding:3px 9px}
+.ph-h .cnt.zero{background:#EFECE8;color:var(--ink-2)}
+.chev{width:18px;height:18px;transition:transform .2s;color:var(--ink-2)}
+.phase.closed .chev{transform:rotate(-90deg)}
+.phase.closed .ph-b{display:none}
+.ph-b{padding:0 14px 14px}
+.ex{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;background:#FDFCFB}
+.ex-top{display:flex;align-items:center;gap:8px}
+.ex-top .nm{font-weight:700;flex:1;cursor:pointer;line-height:1.2}
+.ex-top .nm small{display:block;font-weight:500;color:var(--red);font-size:12px;margin-top:2px}
+.ib{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:#fff;display:grid;place-items:center;color:var(--ink-2);flex:none}
+.ib svg{width:16px;height:16px}
+.ib:hover{color:var(--red);border-color:var(--red)}
+.ib.del:hover{color:#fff;background:var(--red)}
+.presc{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.f label{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-2);margin-bottom:2px;font-weight:600}
+.f input,.f textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:7px 8px;background:#fff;outline:none}
+.f input:focus,.f textarea:focus{border-color:var(--red)}
+.obs{margin-top:6px}
+.obs textarea{resize:vertical;min-height:34px;height:34px}
+.add{width:100%;border:1.5px dashed #D5CFC7;background:transparent;border-radius:12px;padding:11px;font-weight:700;color:var(--red);display:flex;gap:6px;align-items:center;justify-content:center}
+.add:hover{background:var(--red-soft);border-color:var(--red)}
+.empty{font-size:13px;color:var(--ink-2);margin:0 0 8px}
+
+/* library */
+.search{position:relative;margin:16px 0 10px}
+.search input{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px 12px 12px 40px;background:#fff;outline:none}
+.search input:focus{border-color:var(--red)}
+.search svg{position:absolute;left:12px;top:12px;width:20px;height:20px;color:var(--ink-2)}
+.pills{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px;scrollbar-width:none}
+.pill{flex:none;border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.pill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.lib-sec h4{font-family:"Barlow Condensed";font-size:17px;margin:14px 0 6px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-2)}
+.lib-sec h4 i{font-style:normal;background:var(--red);color:#fff;border-radius:6px;padding:0 6px;font-size:14px}
+.li{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:10px 12px;margin-bottom:6px;box-shadow:var(--sh);cursor:pointer}
+.li .t{flex:1;min-width:0}
+.li .t b{display:block;font-weight:700;line-height:1.2}
+.li .t span{display:block;font-size:12.5px;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vtag{font-size:11px;font-weight:700;color:var(--ok);background:#E5F2EC;border-radius:6px;padding:2px 6px;flex:none}
+.btn{border:0;border-radius:12px;padding:12px 16px;font-weight:700;background:var(--red);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn:hover{background:var(--red-d)}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.ghost:hover{border-color:var(--ink)}
+.btn.block{width:100%}
+.btn svg{width:18px;height:18px}
+
+/* share */
+.sharegrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.sb{display:flex;align-items:center;gap:10px;padding:14px;border-radius:14px;background:#fff;box-shadow:var(--sh);text-decoration:none;color:var(--ink);font-weight:700;border:0;text-align:left}
+.sb .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:#fff;flex:none}
+.sb .ic svg{width:20px;height:20px}
+.sb small{display:block;font-weight:500;color:var(--ink-2);font-size:12px}
+.preview{background:#fff;border-radius:14px;box-shadow:var(--sh);padding:14px;white-space:pre-wrap;font-size:13.5px;line-height:1.45;max-height:46vh;overflow:auto;border-left:4px solid var(--red)}
+.note{font-size:12.5px;color:var(--ink-2);margin:8px 0}
+h2.sec{font-family:"Barlow Condensed";font-size:24px;margin:18px 0 4px;text-transform:uppercase}
+
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(30,30,28,.55);z-index:50;display:none;align-items:flex-end;justify-content:center}
+.ov.on{display:flex}
+.sheet{background:#fff;width:100%;max-width:760px;max-height:90vh;overflow:auto;border-radius:20px 20px 0 0;padding:8px 18px 22px;animation:up .22s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:none;opacity:1}}
+@media(min-width:780px){.ov{align-items:center}.sheet{border-radius:20px;max-width:560px}}
+.grab{width:40px;height:4px;background:#DDD;border-radius:4px;margin:4px auto 10px}
+.sheet h3{font-family:"Barlow Condensed";font-size:26px;margin:4px 0 2px;line-height:1.05}
+.sheet .kick{font-size:12px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.8px}
+.steps{margin:14px 0;display:grid;gap:8px}
+.step{display:flex;gap:10px;align-items:flex-start;background:var(--bg);border-radius:12px;padding:10px 12px}
+.step b{flex:none;font-family:"Barlow Condensed";font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:#fff;background:var(--ink);border-radius:6px;padding:2px 7px;margin-top:2px;min-width:74px;text-align:center}
+.step:nth-child(2) b{background:var(--red)}
+.step p{margin:0;font-size:14.5px;line-height:1.4}
+video{width:100%;border-radius:12px;background:#000;max-height:46vh}
+.vbox{margin:10px 0}
+.vlink{display:flex;align-items:center;gap:10px;background:var(--red-soft);border-radius:12px;padding:12px;color:var(--red);font-weight:700;text-decoration:none;word-break:break-all}
+.vlink svg{width:22px;height:22px;flex:none}
+.frm{display:grid;gap:10px;margin-top:12px}
+.frm .f input,.frm .f textarea,.frm .f select{padding:10px;border-radius:10px;border:1px solid var(--line);width:100%;background:#fff;outline:none}
+.frm .f textarea{min-height:60px;resize:vertical}
+.row2{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.row2 .btn{flex:1}
+.pick{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;margin-bottom:6px;cursor:pointer}
+.pick:hover{border-color:var(--red);background:var(--red-soft)}
+.pick b{flex:1}
+.pick .plus{color:var(--red);font-weight:800;font-size:20px}
+.pick.added{opacity:.55}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;transition:.25s;z-index:80;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translateX(-50%)}
+.drop{border:1.5px dashed #D5CFC7;border-radius:12px;padding:12px;text-align:center;font-size:13.5px;color:var(--ink-2);cursor:pointer;display:block}
+.drop:hover{border-color:var(--red);color:var(--red)}
+.drop input{display:none}
+.danger{color:var(--red);background:none;border:0;font-weight:700;padding:10px 0;font-size:14px}
+footer{text-align:center;font-size:12px;color:var(--ink-2);margin:26px 0 0}
+footer b{color:var(--red)}
+</style>
+</head>
+<body>
+<header><div class="hd">
+  <img src="data:image/jpeg;base64,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" alt="Bona entrenamiento integrado">
+  <div class="ttl"><b>Plan de Fuerza</b><span>Continuum Bona RM</span></div>
+</div></header>
+
+<div class="wrap">
+  <!-- RUTINA -->
+  <section class="view on" id="v-rutina">
+    <div class="hero">
+      <div class="name"><label>Nombre de la rutina</label><input id="rName" placeholder="Ej: Fuerza – Semana 1"></div>
+      <div class="row">
+        <div><label>Alumno / paciente</label><input id="rAlumno" placeholder="Nombre"></div>
+        <div><label>Fecha</label><input id="rFecha" type="date"></div>
+      </div>
+      <div class="routbar">
+        <select id="rSel" aria-label="Mis rutinas"></select>
+        <button class="chip" id="bNew">+ Nueva</button>
+        <button class="chip" id="bDup">Duplicar</button>
+        <button class="chip" id="bDelR">Borrar</button>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="sEx">0</b><span>ejercicios</span></div>
+      <div class="stat"><b id="sSer">0</b><span>series totales</span></div>
+      <div class="stat"><b id="sPh">0/8</b><span>fases cubiertas</span></div>
+    </div>
+    <div id="phases"></div>
+  </section>
+
+  <!-- BIBLIOTECA -->
+  <section class="view" id="v-lib">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" placeholder="Buscar ejercicio…">
+    </div>
+    <div class="pills" id="pills"></div>
+    <button class="btn block" id="bNewEx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>Crear ejercicio nuevo</button>
+    <div id="lib"></div>
+  </section>
+
+  <!-- COMPARTIR -->
+  <section class="view" id="v-share">
+    <h2 class="sec">Compartir rutina</h2>
+    <p class="note">Elegí el medio. Se envía la rutina completa en texto, con series, repeticiones, descanso, observaciones y links de video.</p>
+    <div class="sharegrid">
+      <a class="sb" id="shWa" target="_blank" rel="noopener"><span class="ic" style="background:#25D366"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm5.2 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.5-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6-.3.4c-.1.1-.3.3-.1.6.1.3.6 1.1 1.4 1.8 1 .9 1.8 1.1 2.1 1.3.3.1.4.1.6-.1l.8-1c.2-.3.4-.2.6-.1l1.9.9c.3.1.5.2.5.3.1.2.1.7-.2 1.5Z"/></svg></span><span>WhatsApp<small>Enviar a un contacto</small></span></a>
+      <a class="sb" id="shTg" target="_blank" rel="noopener"><span class="ic" style="background:#2AABEE"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.9 4.3 18.7 19c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.8 8.8-7.9c.4-.3-.1-.5-.6-.2L6.7 12.9l-4.6-1.4c-1-.3-1-1 .2-1.5l18-6.9c.8-.3 1.6.2 1.6 1.2Z"/></svg></span><span>Telegram<small>Enviar mensaje</small></span></a>
+      <a class="sb" id="shMail" target="_blank" rel="noopener"><span class="ic" style="background:var(--ink)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span>Email<small>Abrir tu correo</small></span></a>
+      <button class="sb" id="shCopy"><span class="ic" style="background:var(--red)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></span><span>Copiar texto<small>Para Instagram, SMS, notas…</small></span></button>
+    </div>
+    <p class="note">Si el email no abre, usá «Copiar texto» y pegalo en tu correo.</p>
+    <div class="preview" id="preview"></div>
+    <footer><b>Bona</b> · entrenamiento integrado<br>@freddythomsenhall · 11 2193-9157</footer>
+  </section>
+</div>
+
+<nav class="tabs"><div class="in">
+  <button data-v="rutina" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5v11M17.5 6.5v11M3 9v6M21 9v6M6.5 12h11"/></svg>Rutina</button>
+  <button data-v="lib"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2Zm0 0A2 2 0 0 0 6 22h14"/></svg>Ejercicios</button>
+  <button data-v="share"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>Compartir</button>
+</div></nav>
+
+<div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DATOS BASE ===================== */
+const PHASES=[
+ {k:'mio',n:'Liberación miofascial',d:'Bajar tono y sensibilidad antes de moverse',p:{s:'1',r:'45–60 s',d:'—'}},
+ {k:'flex',n:'Flexibilidad dinámica',d:'Ganar rango con movimiento',p:{s:'1',r:'8–10 c/lado',d:'—'}},
+ {k:'car',n:'Control articular rotacional',d:'CARs: rango activo y control',p:{s:'2',r:'3 c/sentido',d:'—'}},
+ {k:'int',n:'Integradores',d:'Estabilidad y control motor',p:{s:'3',r:'10 c/lado',d:'45 s'}},
+ {k:'plio',n:'Pliometría',d:'Reactividad y ciclo estiramiento-acortamiento',p:{s:'3',r:'5',d:'90 s'}},
+ {k:'pot',n:'Potencia',d:'Velocidad de producción de fuerza',p:{s:'4',r:'3',d:'2 min'}},
+ {k:'fue',n:'Fuerza',d:'Fuerza máxima y estructural',p:{s:'4',r:'6',d:'2 min'}},
+ {k:'res',n:'Resistencia',d:'Capacidad de trabajo y aeróbica',p:{s:'1',r:'20 min',d:'—'}}
+];
+// [nombre, posición inicial, movimiento, posición final]
+const BASE={
+mio:[
+ ['Rodillo en cuádriceps','Boca abajo en plancha de antebrazos, rodillo debajo del muslo.','Desplazá el cuerpo desde la cadera hasta arriba de la rodilla; frená 20–30 s en los puntos sensibles.','Volvé hacia la cadera respirando lento. No rodar sobre la rótula.'],
+ ['Rodillo en isquiotibiales','Sentado, rodillo bajo la parte posterior del muslo, manos apoyadas atrás.','Rodá desde el glúteo hasta encima de la rodilla, rotando la pierna para abarcar cara interna y externa.','Sostené sobre la zona más tensa respirando profundo.'],
+ ['Rodillo en glúteos','Sentado sobre el rodillo, tobillo cruzado sobre la rodilla contraria, inclinado hacia el lado cruzado.','Pequeños rodamientos y círculos sobre el glúteo.','Mantené 20–30 s en los puntos de tensión.'],
+ ['Rodillo en dorsal ancho','De costado, rodillo bajo la axila, brazo extendido por encima de la cabeza.','Rodá desde la axila hasta la mitad de las costillas, rotando levemente el tronco.','Volvé a la axila. Evitá la zona lumbar.'],
+ ['Pelota en piriforme','Sentado sobre la pelota en el centro del glúteo, pierna del lado trabajado cruzada.','Presión sostenida con pequeños movimientos de rotación de cadera.','Soltá cuando baje la tensión (60–90 s).'],
+ ['Rodillo en gemelos','Sentado, rodillo bajo la pantorrilla, cadera elevada con apoyo de manos.','Rodá desde el tendón de Aquiles hasta debajo de la rodilla; cruzá la otra pierna encima para más presión.','En el punto tenso, rotá el pie hacia adentro y afuera.'],
+ ['Rodillo en aductores','Boca abajo, una pierna abierta a 90° con el rodillo bajo la cara interna del muslo.','Desplazamiento lateral desde la rodilla hacia la ingle.','Pausa en zonas sensibles, sin llegar al pubis.'],
+ ['Pelota en trapecio','Contra la pared o acostado, pelota entre la escápula y el cuello.','Presión sostenida sumando movimientos lentos del brazo.','Soltá al bajar la sensibilidad. Evitá apoyar sobre la columna.']
+],
+flex:[
+ ['Zancada con rotación de tronco','De pie, manos juntas al pecho.','Paso largo adelante y rotación del tronco hacia la pierna adelantada.','Volvé al centro, empujá y avanzá con la otra pierna.'],
+ ['Elevación de rodilla al pecho (caminando)','De pie, postura erguida.','Caminando, llevá una rodilla al pecho abrazándola y subí en punta de pie con la otra.','Soltá, paso adelante y alterná.'],
+ ['Talón a glúteo (caminando)','De pie, postura erguida.','Caminando, tomá el empeine y llevá el talón al glúteo con rodillas juntas y pelvis neutra.','Soltá y alterná de pierna.'],
+ ['Balanceo de pierna adelante-atrás','De pie de costado a una pared, mano apoyada.','Balanceá la pierna libre adelante y atrás aumentando la amplitud de forma progresiva.','Tronco quieto. Completá y cambiá de lado.'],
+ ['Círculos de cadera caminando','De pie, manos en la cintura.','Caminando, elevá la rodilla y dibujá un círculo amplio hacia afuera.','Apoyá adelante y alterná.'],
+ ['Estocada lateral dinámica','De pie, pies juntos.','Paso amplio lateral, flexioná esa rodilla y llevá la cadera atrás con la otra pierna estirada.','Empujá y volvé al centro; alterná.'],
+ ['Skipping con rotación de tronco','De pie, brazos al frente.','Skipping suave rotando el tronco hacia la rodilla que sube.','Mantené ritmo coordinado durante el tramo.'],
+ ['Apertura de cadera (open the gate)','De pie, postura erguida.','Elevá la rodilla al frente y abrila hacia el costado con la pelvis estable.','Bajá y alterná. Sumá la versión inversa (cerrar puerta).']
+],
+car:[
+ ['CAR de hombro','De pie, brazo al costado, puño cerrado y tensión en todo el cuerpo.','Llevá el brazo por el círculo más grande posible, lento y controlado, sin compensar con el tronco.','Volvé al inicio y repetí en sentido inverso.'],
+ ['CAR de cadera','En cuadrupedia o de pie con apoyo, tronco firme.','Flexioná, abrí, rotá y extendé la cadera en el máximo círculo posible.','Volvé al inicio y repetí al revés.'],
+ ['CAR de tobillo','Sentado o de pie con la pierna elevada, rodilla fija.','Círculos máximos con el pie sin mover la pierna.','Invertí el sentido.'],
+ ['CAR de columna cervical','Sentado erguido, tensión general.','Mentón al pecho y llevá la cabeza en un círculo lento por todo el rango.','Invertí el sentido, siempre sin dolor.'],
+ ['CAR de muñeca','Antebrazo fijo sostenido por la otra mano, puño cerrado.','Círculos máximos de la muñeca.','Invertí el sentido.'],
+ ['CAR de rodilla (isometrías en rango)','Sentado o en cuadrupedia, muslo fijo, rodilla flexionada.','Rotá la tibia hacia adentro y afuera y sostené isometrías en los extremos del rango.','Volvé al centro con control.'],
+ ['CAR de columna torácica','Sentado o de pie, pelvis fija.','Flexioná, inclinate, extendé y rotá la columna dorsal en un círculo amplio.','Invertí el sentido.']
+],
+int:[
+ ['Plancha con toque de hombro','Plancha alta, manos bajo hombros, pies separados.','Tocá el hombro contrario con una mano sin rotar la pelvis.','Apoyá y alterná.'],
+ ['Puente de glúteo con marcha','Boca arriba, rodillas flexionadas, cadera elevada en puente.','Despegá un pie del piso manteniendo la pelvis nivelada.','Apoyá y alterná sin perder altura.'],
+ ['Bird dog','Cuadrupedia, columna neutra.','Extendé brazo y pierna contraria hasta alinearlos con el tronco.','Volvé con control y alterná.'],
+ ['Dead bug','Boca arriba, brazos al techo, cadera y rodillas a 90°, lumbar pegada al piso.','Extendé brazo y pierna contraria hacia el piso.','Volvé y alterná sin despegar la lumbar.'],
+ ['Sentadilla con banda en rodillas','De pie, miniband sobre las rodillas, pies al ancho de cadera.','Sentadilla empujando las rodillas hacia afuera contra la banda.','Subí manteniendo la alineación de rodillas.'],
+ ['Paso lateral con miniband','Miniband en tobillos o rodillas, semisentadilla.','Pasos laterales cortos manteniendo tensión en la banda.','Mismo número de pasos hacia ambos lados.'],
+ ['Plancha lateral con abducción de cadera','Plancha lateral sobre antebrazo, cuerpo alineado.','Elevá la pierna de arriba sin rotar la pelvis.','Bajá con control.']
+],
+plio:[
+ ['Salto al cajón','De pie frente al cajón.','Contramovimiento con braceo y salto aterrizando suave sobre el cajón.','De pie arriba; bajá caminando.'],
+ ['Salto en profundidad (drop jump)','De pie sobre un cajón bajo.','Dejate caer, contacto breve y salto vertical máximo inmediato.','Aterrizá amortiguando y reiniciá.'],
+ ['Salto a una pierna (bounding)','Desde trote suave.','Saltos largos alternando piernas con empuje horizontal y braceo amplio.','Aterrizá con control al final del tramo.'],
+ ['Skipping con salto','De pie, postura atlética.','Skipping con impulso vertical en cada paso, rodilla alta y braceo.','Desacelerá progresivamente.'],
+ ['Salto lateral sobre valla','De pie al costado de una valla baja.','Saltos laterales sobre la valla con contactos cortos.','Estabilizá el último aterrizaje.'],
+ ['Burpee con salto','De pie.','Bajá a plancha, volvé a cuclillas y saltá con brazos arriba.','Aterrizá suave y encadená.'],
+ ['Salto vertical con contramovimiento','De pie, pies al ancho de cadera.','Flexión rápida de cadera y rodillas con braceo y salto máximo.','Aterrizaje amortiguado y reset.']
+],
+pot:[
+ ['Arrancada de potencia (power clean)','Barra en el piso, pies bajo la barra, espalda neutra, agarre por fuera de las rodillas.','Primer tirón, extensión explosiva de cadera y recepción en rack frontal en cuarto de sentadilla.','De pie con la barra en los hombros.'],
+ ['Sentadilla con salto (jump squat)','De pie, sin carga o con carga liviana.','Sentadilla parcial y salto explosivo.','Aterrizá amortiguando y repetí.'],
+ ['Lanzamiento de balón medicinal (slam)','De pie, balón arriba de la cabeza.','Lanzalo con fuerza contra el piso usando todo el cuerpo.','Recogelo y repetí.'],
+ ['Arrastre de trineo explosivo','Inclinado adelante, manos en el trineo.','Empuje con pasos cortos y potentes a máxima velocidad.','Tramos cortos con recuperación completa.'],
+ ['Cargada colgante (hang clean)','Barra a la altura de los muslos, cadera atrás.','Extensión explosiva y recepción en rack frontal.','Ponete de pie con la barra en hombros.'],
+ ['Press de banca explosivo','Acostado en banco, barra en el pecho, carga moderada.','Empujá a máxima velocidad.','Bajá controlado.'],
+ ['Swing con kettlebell','Pies separados, kettlebell entre los pies.','Bisagra de cadera y extensión explosiva proyectando la pesa a la altura del pecho.','Dejala caer entre las piernas y encadená.']
+],
+fue:[
+ ['Sentadilla profunda','Barra sobre trapecios, pies al ancho de hombros.','Bajá con la cadera atrás y abajo, rodillas en línea con los pies, por debajo del paralelo.','Subí empujando el piso.'],
+ ['Peso muerto','Barra sobre el medio del pie, agarre al ancho de hombros, espalda neutra.','Empujá el piso y extendé cadera y rodillas con la barra pegada al cuerpo.','De pie, glúteos firmes; bajá con control.'],
+ ['Press de banca','Acostado, escápulas retraídas, pies firmes.','Bajá la barra al pecho y empujá.','Brazos extendidos.'],
+ ['Press militar','De pie, barra en clavículas, glúteos y abdomen firmes.','Empujá en vertical pasando la cabeza por debajo de la barra al final.','Brazos bloqueados arriba.'],
+ ['Remo con barra','Bisagra de cadera a ~45°, espalda neutra.','Llevá la barra al abdomen juntando escápulas.','Bajá controlado.'],
+ ['Zancada con carga','De pie con mancuernas o barra.','Paso adelante bajando hasta que ambas rodillas estén a ~90°.','Empujá y volvé al inicio.'],
+ ['Hip thrust','Escápulas apoyadas en banco, barra sobre la cadera.','Extendé la cadera hasta alinear tronco y muslos.','Pausa arriba y bajá controlado.']
+],
+res:[
+ ['Circuito funcional','Estaciones de 4–6 ejercicios preparadas.','Trabajo por tiempo o repeticiones con transiciones cortas.','Descanso al final de cada vuelta.'],
+ ['Carrera continua','Después de la entrada en calor.','Correr a ritmo sostenido en zona aeróbica.','Vuelta a la calma caminando.'],
+ ['Bicicleta fija','Asiento a la altura de la cadera.','Pedaleo constante o por intervalos.','Vuelta a la calma con pedaleo suave.'],
+ ['Remo en máquina','Sentado, pies fijos, brazos extendidos.','Empuje de piernas, inclinación de tronco y tirón de brazos.','Volvé en orden inverso.'],
+ ['Burpees en serie','De pie.','Burpees continuos a ritmo sostenido.','Mantené la técnica en cada repetición.'],
+ ['Subida de escaleras','Al pie de la escalera.','Subí a ritmo constante con apoyo completo del pie.','Bajá caminando como recuperación.'],
+ ['Circuito tipo tabata','Elegí de 1 a 4 ejercicios.','20 s de trabajo máximo / 10 s de pausa, 8 rondas.','Descanso de 1–2 min entre bloques.']
+]};
+
+/* ===================== ESTADO ===================== */
+const KEY='bona-fuerza-v1';
+const uid=()=>Math.random().toString(36).slice(2,10);
+const today=()=>new Date().toISOString().slice(0,10);
+function seedLib(){const L={};PHASES.forEach(p=>{L[p.k]=BASE[p.k].map(a=>({id:uid(),n:a[0],ini:a[1],mov:a[2],fin:a[3],url:'',vid:false}))});return L}
+function newRoutine(name){const it={};PHASES.forEach(p=>it[p.k]=[]);return{id:uid(),name:name||'Rutina de fuerza',alumno:'',fecha:today(),items:it}}
+let S;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
+if(!S||!S.lib){S={lib:seedLib(),routines:[],cur:null}}
+if(!S.routines.length){const r=newRoutine('Rutina de fuerza – Semana 1');S.routines.push(r);S.cur=r.id}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+const R=()=>S.routines.find(r=>r.id===S.cur)||S.routines[0];
+const findEx=id=>{for(const p of PHASES){const e=S.lib[p.k].find(x=>x.id===id);if(e)return{e,p}}return null};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ===================== VIDEO (IndexedDB) ===================== */
+let db=null;
+function idb(){return new Promise(res=>{if(db)return res(db);try{const q=indexedDB.open('bona-videos',1);q.onupgradeneeded=()=>q.result.createObjectStore('v');q.onsuccess=()=>{db=q.result;res(db)};q.onerror=()=>res(null)}catch(e){res(null)}})}
+async function vPut(id,blob){const d=await idb();if(!d)return false;return new Promise(r=>{try{const t=d.transaction('v','readwrite');t.objectStore('v').put(blob,id);t.oncomplete=()=>r(true);t.onerror=()=>r(false)}catch(e){r(false)}})}
+async function vGet(id){const d=await idb();if(!d)return null;return new Promise(r=>{try{const q=d.transaction('v').objectStore('v').get(id);q.onsuccess=()=>r(q.result||null);q.onerror=()=>r(null)}catch(e){r(null)}})}
+async function vDel(id){const d=await idb();if(!d)return;try{d.transaction('v','readwrite').objectStore('v').delete(id)}catch(e){}}
+const memVid={}; // fallback si no hay IndexedDB
+
+/* ===================== UI HELPERS ===================== */
+const $=s=>document.querySelector(s);
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),1800)}
+const ov=$('#ov'),sheet=$('#sheet');
+let curURL=null;
+function openSheet(html){if(curURL){URL.revokeObjectURL(curURL);curURL=null}sheet.innerHTML='<div class="grab"></div>'+html;ov.classList.add('on');sheet.scrollTop=0}
+function closeSheet(){ov.classList.remove('on');sheet.innerHTML='';if(curURL){URL.revokeObjectURL(curURL);curURL=null}}
+ov.addEventListener('click',e=>{if(e.target===ov)closeSheet()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet()});
+function confirmSheet(msg,ok){openSheet(`<h3>${esc(msg)}</h3><div class="row2"><button class="btn ghost" id="cN">Cancelar</button><button class="btn" id="cY">Confirmar</button></div>`);$('#cN').onclick=closeSheet;$('#cY').onclick=()=>{closeSheet();ok()}}
+const I={
+ up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 15 6-6 6 6"/></svg>',
+ down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg>',
+ x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+ play:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>',
+ chev:'<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m6 9 6 6 6-6"/></svg>',
+ link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>'
+};
+
+/* ===================== VISTAS ===================== */
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+function show(v){document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));if(v==='lib')renderLib();if(v==='share')renderShare();if(v==='rutina')renderRoutine();window.scrollTo(0,0)}
+
+/* ---------- RUTINA ---------- */
+const closed=new Set();
+function renderHead(){const r=R();$('#rName').value=r.name;$('#rAlumno').value=r.alumno;$('#rFecha').value=r.fecha||'';
+ $('#rSel').innerHTML=S.routines.map(x=>`<option value="${x.id}" ${x.id===r.id?'selected':''}>${esc(x.name||'Sin nombre')}${x.alumno?' · '+esc(x.alumno):''}</option>`).join('')}
+['rName','rAlumno','rFecha'].forEach(id=>$('#'+id).addEventListener('input',e=>{const r=R();r[{rName:'name',rAlumno:'alumno',rFecha:'fecha'}[id]]=e.target.value;save();if(id!=='rFecha'){const o=$('#rSel').selectedOptions[0];if(o)o.textContent=(r.name||'Sin nombre')+(r.alumno?' · '+r.alumno:'')}}));
+$('#rSel').onchange=e=>{S.cur=e.target.value;save();renderRoutine()};
+$('#bNew').onclick=()=>{const r=newRoutine('Nueva rutina');S.routines.push(r);S.cur=r.id;save();renderRoutine();$('#rName').select();toast('Rutina nueva creada')};
+$('#bDup').onclick=()=>{const c=JSON.parse(JSON.stringify(R()));c.id=uid();c.name+=' (copia)';S.routines.push(c);S.cur=c.id;save();renderRoutine();toast('Rutina duplicada')};
+$('#bDelR').onclick=()=>confirmSheet('¿Borrar la rutina «'+(R().name||'')+'»?',()=>{S.routines=S.routines.filter(x=>x.id!==S.cur);if(!S.routines.length)S.routines.push(newRoutine('Rutina de fuerza'));S.cur=S.routines[0].id;save();renderRoutine();toast('Rutina borrada')});
+
+function renderStats(){const r=R();let ex=0,se=0,ph=0;PHASES.forEach(p=>{const a=r.items[p.k]||[];if(a.length)ph++;ex+=a.length;a.forEach(i=>se+=parseInt(i.s)||0)});$('#sEx').textContent=ex;$('#sSer').textContent=se;$('#sPh').textContent=ph+'/8'}
+
+function renderRoutine(){renderHead();const r=R();
+ $('#phases').innerHTML=PHASES.map((p,i)=>{const a=(r.items[p.k]=r.items[p.k]||[]);
+  const list=a.map((it,j)=>{const f=findEx(it.ex);if(!f)return'';const e=f.e;const hasV=e.vid||e.url||memVid[e.id];
+   return `<div class="ex" data-p="${p.k}" data-j="${j}">
+    <div class="ex-top"><div class="nm" data-open="${e.id}">${esc(e.n)}<small>${hasV?'▶ Ver explicación y video':'Ver explicación'}</small></div>
+     <button class="ib" data-mv="-1" title="Subir">${I.up}</button><button class="ib" data-mv="1" title="Bajar">${I.down}</button><button class="ib del" data-rm title="Quitar">${I.x}</button></div>
+    <div class="presc">
+     <div class="f"><label>Series</label><input inputmode="numeric" data-k="s" value="${esc(it.s)}"></div>
+     <div class="f"><label>Reps / tiempo</label><input data-k="r" value="${esc(it.r)}"></div>
+     <div class="f"><label>Descanso</label><input data-k="d" value="${esc(it.d)}"></div>
+    </div>
+    <div class="f obs"><textarea data-k="o" placeholder="Observaciones (carga, tempo, RPE, lado…)">${esc(it.o)}</textarea></div>
+   </div>`}).join('');
+  return `<div class="phase ${closed.has(p.k)?'closed':''}" data-ph="${p.k}">
+   <div class="ph-h" data-tog="${p.k}"><div class="num">${i+1}</div><div><h3>${p.n}</h3><p>${p.d}</p></div><span class="cnt ${a.length?'':'zero'}">${a.length}</span>${I.chev}</div>
+   <div class="ph-b">${a.length?list:'<p class="empty">Todavía no hay ejercicios en esta fase.</p>'}
+    <button class="add" data-add="${p.k}">+ Agregar ejercicio</button></div></div>`}).join('');
+ renderStats()}
+
+$('#phases').addEventListener('click',e=>{const t=e.target;
+ const tog=t.closest('[data-tog]');if(tog){const k=tog.dataset.tog;closed.has(k)?closed.delete(k):closed.add(k);tog.parentElement.classList.toggle('closed');return}
+ const add=t.closest('[data-add]');if(add)return picker(add.dataset.add);
+ const op=t.closest('[data-open]');if(op)return detail(op.dataset.open);
+ const ex=t.closest('.ex');if(!ex)return;const a=R().items[ex.dataset.p],j=+ex.dataset.j;
+ const mv=t.closest('[data-mv]');if(mv){const k=j+ +mv.dataset.mv;if(k<0||k>=a.length)return;[a[j],a[k]]=[a[k],a[j]];save();renderRoutine();return}
+ if(t.closest('[data-rm]')){a.splice(j,1);save();renderRoutine();toast('Ejercicio quitado')}
+});
+$('#phases').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;const ex=e.target.closest('.ex');R().items[ex.dataset.p][+ex.dataset.j][k]=e.target.value;save();if(k==='s')renderStats()});
+
+function picker(pk){const p=PHASES.find(x=>x.k===pk);const used=new Set(R().items[pk].map(i=>i.ex));
+ openSheet(`<div class="kick">Fase ${PHASES.indexOf(p)+1}</div><h3>${p.n}</h3><p class="note">Tocá para sumar a la rutina. Podés sumar varios.</p>
+ <div id="pk">${S.lib[pk].map(e=>`<div class="pick ${used.has(e.id)?'added':''}" data-id="${e.id}"><b>${esc(e.n)}</b>${(e.vid||e.url)?'<span class="vtag">VIDEO</span>':''}<span class="plus">${used.has(e.id)?'✓':'+'}</span></div>`).join('')}</div>
+ <div class="row2"><button class="btn ghost" id="pkNew">Crear ejercicio nuevo</button><button class="btn" id="pkOk">Listo</button></div>`);
+ $('#pk').onclick=e=>{const el=e.target.closest('.pick');if(!el)return;R().items[pk].push({ex:el.dataset.id,s:p.p.s,r:p.p.r,d:p.p.d,o:''});save();el.classList.add('added');el.querySelector('.plus').textContent='✓';toast('Agregado: '+el.querySelector('b').textContent)};
+ $('#pkOk').onclick=()=>{closeSheet();renderRoutine()};
+ $('#pkNew').onclick=()=>editEx(null,pk,true)}
+
+/* ---------- DETALLE ---------- */
+async function detail(id){const f=findEx(id);if(!f)return;const{e,p}=f;
+ openSheet(`<div class="kick">${p.n}</div><h3>${esc(e.n)}</h3>
+  <div class="vbox" id="vb"></div>
+  <div class="steps">
+   <div class="step"><b>Inicio</b><p>${esc(e.ini)||'—'}</p></div>
+   <div class="step"><b>Movimiento</b><p>${esc(e.mov)||'—'}</p></div>
+   <div class="step"><b>Final</b><p>${esc(e.fin)||'—'}</p></div>
+  </div>
+  <div class="row2"><button class="btn ghost" id="dEd">Editar / agregar video</button><button class="btn" id="dOk">Cerrar</button></div>`);
+ $('#dOk').onclick=closeSheet;$('#dEd').onclick=()=>editEx(id,p.k);
+ const vb=$('#vb');let h='';
+ const blob=memVid[id]||(e.vid?await vGet(id):null);
+ if(blob&&ov.classList.contains('on')){curURL=URL.createObjectURL(blob);h+=`<video src="${curURL}" controls playsinline preload="metadata"></video>`}
+ if(e.url)h+=`<a class="vlink" href="${esc(e.url)}" target="_blank" rel="noopener" style="margin-top:8px">${I.play}<span>Ver video<br><small style="font-weight:500">${esc(e.url)}</small></span></a>`;
+ if(vb)vb.innerHTML=h}
+
+/* ---------- CREAR / EDITAR ---------- */
+function editEx(id,pk,fromPicker){const f=id?findEx(id):null;const e=f?f.e:{n:'',ini:'',mov:'',fin:'',url:'',vid:false};const phase=f?f.p.k:pk||'mio';
+ openSheet(`<div class="kick">${id?'Editar ejercicio':'Nuevo ejercicio'}</div><h3>${id?esc(e.n):'Crear ejercicio'}</h3>
+ <div class="frm">
+  <div class="f"><label>Nombre</label><input id="eN" value="${esc(e.n)}" placeholder="Ej: Sentadilla búlgara"></div>
+  <div class="f"><label>Fase del continuum</label><select id="eP">${PHASES.map((p,i)=>`<option value="${p.k}" ${p.k===phase?'selected':''}>${i+1}. ${p.n}</option>`).join('')}</select></div>
+  <div class="f"><label>Posición inicial</label><textarea id="eI">${esc(e.ini)}</textarea></div>
+  <div class="f"><label>Movimiento</label><textarea id="eM">${esc(e.mov)}</textarea></div>
+  <div class="f"><label>Posición final / clave</label><textarea id="eF">${esc(e.fin)}</textarea></div>
+  <div class="f"><label>Link de video (YouTube, Instagram, Drive…)</label><input id="eU" type="url" value="${esc(e.url)}" placeholder="https://"></div>
+  <div class="f"><label>Video desde tu dispositivo</label>
+   <label class="drop" id="eDrop"><input type="file" accept="video/*" id="eV"><span id="eVt">${e.vid?'✓ Video cargado · tocá para reemplazar':'Tocá para elegir o grabar un video'}</span></label>
+   ${e.vid?'<button class="danger" id="eVdel" type="button">Quitar video cargado</button>':''}</div>
+ </div>
+ <div class="row2"><button class="btn ghost" id="eC">Cancelar</button><button class="btn" id="eS">Guardar</button></div>
+ ${id?'<button class="danger" id="eDel">Eliminar ejercicio de la biblioteca</button>':''}`);
+ let file=null,dropVid=false;
+ $('#eV').onchange=ev=>{file=ev.target.files[0]||null;if(file)$('#eVt').textContent='✓ '+file.name+' ('+(file.size/1048576).toFixed(1)+' MB)'};
+ const vd=$('#eVdel');if(vd)vd.onclick=()=>{dropVid=true;vd.remove();$('#eVt').textContent='Video quitado · tocá para elegir otro'};
+ $('#eC').onclick=()=>id?detail(id):(fromPicker?picker(pk):closeSheet());
+ $('#eS').onclick=async()=>{const n=$('#eN').value.trim();if(!n){$('#eN').focus();toast('Poné un nombre');return}
+  const np=$('#eP').value;let ex=e;
+  if(!id){ex={id:uid(),vid:false};S.lib[np].push(ex)}
+  else if(np!==phase){S.lib[phase]=S.lib[phase].filter(x=>x.id!==id);S.lib[np].push(ex)}
+  Object.assign(ex,{n,ini:$('#eI').value.trim(),mov:$('#eM').value.trim(),fin:$('#eF').value.trim(),url:$('#eU').value.trim()});
+  if(dropVid&&!file){await vDel(ex.id);delete memVid[ex.id];ex.vid=false}
+  if(file){const ok=await vPut(ex.id,file);if(ok)ex.vid=true;else{memVid[ex.id]=file;toast('Video disponible solo en esta sesión')}}
+  save();toast(id?'Ejercicio actualizado':'Ejercicio creado');
+  if(fromPicker&&!id){picker(np)}else{detail(ex.id)}
+  renderLib();renderRoutine()};
+ const del=$('#eDel');if(del)del.onclick=()=>confirmSheet('¿Eliminar «'+e.n+'»? Se quitará también de las rutinas.',async()=>{S.lib[phase]=S.lib[phase].filter(x=>x.id!==id);S.routines.forEach(r=>PHASES.forEach(p=>r.items[p.k]=(r.items[p.k]||[]).filter(i=>i.ex!==id)));await vDel(id);save();renderLib();renderRoutine();toast('Ejercicio eliminado')})}
+
+/* ---------- BIBLIOTECA ---------- */
+let fil='all';
+function renderPills(){$('#pills').innerHTML=[['all','Todas']].concat(PHASES.map((p,i)=>[p.k,(i+1)+'. '+p.n])).map(([k,n])=>`<button class="pill ${fil===k?'on':''}" data-f="${k}">${n}</button>`).join('')}
+$('#pills').onclick=e=>{const b=e.target.closest('[data-f]');if(!b)return;fil=b.dataset.f;renderLib()};
+$('#q').addEventListener('input',renderLib);
+$('#bNewEx').onclick=()=>editEx(null,fil==='all'?'mio':fil);
+function renderLib(){renderPills();const q=$('#q').value.trim().toLowerCase();
+ $('#lib').innerHTML=PHASES.map((p,i)=>{if(fil!=='all'&&fil!==p.k)return'';
+  const a=S.lib[p.k].filter(e=>!q||(e.n+' '+e.mov).toLowerCase().includes(q));if(!a.length)return'';
+  return `<div class="lib-sec"><h4><i>${i+1}</i>${p.n}</h4>${a.map(e=>`<div class="li" data-open="${e.id}"><div class="t"><b>${esc(e.n)}</b><span>${esc(e.mov)}</span></div>${(e.vid||e.url||memVid[e.id])?'<span class="vtag">VIDEO</span>':''}</div>`).join('')}</div>`}).join('')||'<p class="note" style="margin-top:16px">No se encontraron ejercicios.</p>'}
+$('#lib').onclick=e=>{const el=e.target.closest('[data-open]');if(el)detail(el.dataset.open)};
+
+/* ---------- COMPARTIR ---------- */
+function routineText(){const r=R();const L=[];
+ L.push('🔴 BONA · entrenamiento integrado');L.push('*'+(r.name||'Rutina de fuerza').toUpperCase()+'*');
+ if(r.alumno)L.push('Alumno: '+r.alumno);if(r.fecha){const[y,m,d]=r.fecha.split('-');L.push('Fecha: '+d+'/'+m+'/'+y)}
+ L.push('');let n=0;
+ PHASES.forEach((p,i)=>{const a=r.items[p.k]||[];if(!a.length)return;L.push('*'+(i+1)+'. '+p.n.toUpperCase()+'*');
+  a.forEach(it=>{const f=findEx(it.ex);if(!f)return;n++;const e=f.e;
+   const pr=[it.s&&it.s+(it.s.trim()==='1'?' serie':' series'),it.r,it.d&&it.d!=='—'&&'desc. '+it.d].filter(Boolean).join(' · ');
+   L.push('• '+e.n+(pr?' — '+pr:''));if(it.o)L.push('   ↳ '+it.o);if(e.url)L.push('   ▶ '+e.url)});L.push('')});
+ if(!n)L.push('(Rutina vacía: agregá ejercicios en la pestaña Rutina)\n');
+ L.push('Consultas: @freddythomsenhall · 11 2193-9157');return L.join('\n')}
+function renderShare(){const t=routineText();$('#preview').textContent=t;const u=encodeURIComponent(t);const r=R();
+ $('#shWa').href='https://wa.me/?text='+u;
+ $('#shTg').href='https://t.me/share/url?url='+encodeURIComponent('Bona')+'&text='+u;
+ $('#shMail').href='mailto:?subject='+encodeURIComponent('Bona · '+(r.name||'Rutina de fuerza'))+'&body='+u}
+$('#shCopy').onclick=async()=>{const t=routineText();try{await navigator.clipboard.writeText(t);toast('Rutina copiada ✓')}catch(e){const s=getSelection(),rg=document.createRange();rg.selectNodeContents($('#preview'));s.removeAllRanges();s.addRange(rg);toast('Seleccionada: copiala con Copiar')}};
+
+renderRoutine();
+</script>
+</body>
+</html>
